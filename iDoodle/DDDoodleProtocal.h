@@ -11,7 +11,7 @@
 @protocol LockMouseDelegate <NSObject>
 
 @required
-- (void)lockMouseAtStartPoint;
+- (void)lockMouseAtPoint: (NSPoint)point;
 
 @end
 

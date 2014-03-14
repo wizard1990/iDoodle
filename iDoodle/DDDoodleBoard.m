@@ -105,7 +105,6 @@ const NSUInteger DDLISTLIMIT = 512;
                 break;
         }
     }
-
     NSBezierPath *path = [NSBezierPath bezierPath];
     if (eraseFlag) {
         [path setLineWidth:self.eraserWidth];
@@ -133,7 +132,7 @@ const NSUInteger DDLISTLIMIT = 512;
 #pragma mark - Touch Event Handling
 - (void)touchesBeganWithEvent:(NSEvent *)event
 {
-    [self.delegate lockMouseAtStartPoint];
+    [NSCursor unhide];
     [pointsList removeAllObjects];
     NSSet *anyTouches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
     if ([anyTouches count] > 1) {
@@ -143,6 +142,7 @@ const NSUInteger DDLISTLIMIT = 512;
     if ([touches count] == 1) {
         NSTouch *touch = [touches anyObject];
         NSPoint startPoint = CGPointMake(self.frame.size.width*touch.normalizedPosition.x, self.frame.size.height*touch.normalizedPosition.y);
+        [self.delegate lockMouseAtPoint:startPoint];
         [pointsList addObject:[NSValue valueWithPoint:startPoint]];
         [self.penDelegate setImageatPoint:startPoint];
         [self.penDelegate unhidePenImage:eraseFlag];
@@ -151,7 +151,6 @@ const NSUInteger DDLISTLIMIT = 512;
 
 - (void)touchesMovedWithEvent:(NSEvent *)event
 {
-    [self.delegate lockMouseAtStartPoint];
     NSSet *anyTouches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
     if ([anyTouches count] > 1) {
         return;
@@ -160,6 +159,7 @@ const NSUInteger DDLISTLIMIT = 512;
     if ([touches count] == 1) {
         NSTouch *touch = [touches anyObject];
         CGPoint endPoint = CGPointMake(self.frame.size.width*touch.normalizedPosition.x, self.frame.size.height*touch.normalizedPosition.y);
+        [self.delegate lockMouseAtPoint:endPoint];
         [pointsList addObject:[NSValue valueWithPoint:endPoint]];
         [self drawLineFromPointsList];
         if ([pointsList count] >= DDLISTLIMIT) {
@@ -173,6 +173,8 @@ const NSUInteger DDLISTLIMIT = 512;
 
 - (void)touchesEndedWithEvent:(NSEvent *)event
 {
+    [NSCursor hide];
+    [self.delegate lockMouseAtPoint:CGPointMake(50, 50)];
     [pointsList removeAllObjects];
     [self.penDelegate hidePenImage];
 }
