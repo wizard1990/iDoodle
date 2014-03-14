@@ -12,6 +12,9 @@
 
 @interface DDViewController ()
 
+@property (nonatomic, strong) NSImageView *penView;
+@property (nonatomic, strong) NSImageView *eraserView;
+
 @end
 
 @implementation DDViewController
@@ -30,7 +33,15 @@
         scale = 1.0f;
         isDoodle = false;
         [self.view addSubview: self.doodleBoard];
-        [self.view.window makeFirstResponder:self.doodleBoard];
+        //[self.view.window makeFirstResponder:self.doodleBoard];
+        
+        _penView = [[NSImageView alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
+        _eraserView = [[NSImageView alloc] initWithFrame:CGRectMake(100, 100, 32, 32)];
+        _eraserView.image = [NSImage imageNamed:@"EraserCursor"];
+        //[self.view addSubview:_eraserView];
+        [_eraserView setHidden:YES];
+        
+        //todo:: add image
     }
     return self;
 }
@@ -39,6 +50,7 @@
 {
     return YES;
 }
+
 #pragma mark - User Actions
 - (void)startDoodle
 {
@@ -84,19 +96,18 @@
 }
 
 #pragma mark - Move Pen Delegate
-- (void)setPenImage:(NSView *)penView atPoint:(NSPoint)point
+- (void)setImageatPoint:(NSPoint)point
 {
-    CGRect rect = penView.frame;
-    penView.frame = CGRectMake(point.x, point.y, rect.size.width, rect.size.height);
+    [_eraserView setFrameOrigin:point];
 }
 
-- (void)hidePenImage:(NSView *)penView
+- (void)hidePenImage
 {
-    [penView setHidden:YES];
+    [_eraserView setHidden:YES];
 }
 
-- (void)unhidePenImage:(NSView *)penView
+- (void)unhidePenImage: (BOOL)isEraser
 {
-    [penView setHidden:NO];
+    [_eraserView setHidden:NO];
 }
 @end

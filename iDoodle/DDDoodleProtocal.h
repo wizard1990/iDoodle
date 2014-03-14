@@ -18,8 +18,8 @@
 @protocol MovePenImageDelegate <NSObject>
 
 @required
-- (void) setPenImage: (NSView *)penView atPoint: (NSPoint) point;
-- (void) hidePenImage: (NSView *)penView;
-- (void) unhidePenImage: (NSView *)penView;
+- (void) setImageatPoint: (NSPoint) point;
+- (void) hidePenImage;
+- (void) unhidePenImage: (BOOL)isEraser;
 
 @end

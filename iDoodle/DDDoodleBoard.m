@@ -8,11 +8,10 @@
 
 #import "DDDoodleBoard.h"
 
-const NSUInteger DDLISTLIMIT = 1024;
+const NSUInteger DDLISTLIMIT = 512;
 
 @implementation DDDoodleBoard
 {
-    NSView *penView, *eraserView;
     NSMutableArray *pointsList;
     BOOL eraseFlag;
 }
@@ -21,9 +20,6 @@ const NSUInteger DDLISTLIMIT = 1024;
 {
     self = [super initWithFrame:frame];
     if (self) {
-        penView = [[NSView alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
-        eraserView = [[NSView alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
-        //todo:: add image
         self.strokeWidth = 2;
         self.eraserWidth = 6;
         self.strokeColor = BLACK;
@@ -32,11 +28,6 @@ const NSUInteger DDLISTLIMIT = 1024;
         [self clearContent];
     }
     return self;
-}
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-	[super drawRect:dirtyRect];
 }
 
 - (BOOL)isOpaque
@@ -58,8 +49,8 @@ const NSUInteger DDLISTLIMIT = 1024;
     }
     else if (eraseFlag && [theEvent modifierFlags] == 256) {
         eraseFlag = NO;
-        [pointsList removeAllObjects];
     }
+    [pointsList removeAllObjects];
 }
 
 #pragma mark - Drawing Methods
@@ -114,7 +105,7 @@ const NSUInteger DDLISTLIMIT = 1024;
                 break;
         }
     }
-    
+
     NSBezierPath *path = [NSBezierPath bezierPath];
     if (eraseFlag) {
         [path setLineWidth:self.eraserWidth];
@@ -153,14 +144,8 @@ const NSUInteger DDLISTLIMIT = 1024;
         NSTouch *touch = [touches anyObject];
         NSPoint startPoint = CGPointMake(self.frame.size.width*touch.normalizedPosition.x, self.frame.size.height*touch.normalizedPosition.y);
         [pointsList addObject:[NSValue valueWithPoint:startPoint]];
-        if (eraseFlag) {
-            [self.penDelegate setPenImage:eraserView atPoint:startPoint];
-            [self.penDelegate unhidePenImage:eraserView];
-        }
-        else {
-            [self.penDelegate setPenImage:penView atPoint:startPoint];
-            [self.penDelegate unhidePenImage:penView];
-        }
+        [self.penDelegate setImageatPoint:startPoint];
+        [self.penDelegate unhidePenImage:eraseFlag];
     }
 }
 
@@ -181,6 +166,7 @@ const NSUInteger DDLISTLIMIT = 1024;
             [pointsList removeAllObjects];
             [pointsList addObject:[NSValue valueWithPoint:endPoint]];
         }
+        [self.penDelegate setImageatPoint:endPoint];
         [self setNeedsDisplay:YES];
     }
 }
@@ -188,7 +174,6 @@ const NSUInteger DDLISTLIMIT = 1024;
 - (void)touchesEndedWithEvent:(NSEvent *)event
 {
     [pointsList removeAllObjects];
-    [self.penDelegate hidePenImage:penView];
-    [self.penDelegate hidePenImage:eraserView];
+    [self.penDelegate hidePenImage];
 }
 @end
